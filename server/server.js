@@ -12,18 +12,27 @@ const io = socketIO(server);
 
 app.use(express.static(publicPath));
 
+
 io.on("connection", (socket) => {
     console.log("New user connected");
 
+               
     socket.on("createMessage", (message) => {
         console.log("createMessage", message);
+        // emit to all connections
+        io.emit("newMessage", {
+            from: message.from,
+            text: message.text,
+            createdAt: new Date().getTime()
+        });
     });
 
-    socket.emit("newMessage", {
-        from: "my server",
-        text: "test123",
-        createdAt: 123
-    });
+    // // emit to single connections
+    // socket.emit("newMessage", {
+    //     from: "my server",
+    //     text: "test123",
+    //     createdAt: 123
+    // });
 
     socket.on("disconnect", () => {
         console.log("client was diconnected");
